@@ -1,0 +1,35 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: latest
+    commands:
+      - nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2 &
+      - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
+  pre_build:
+    commands:
+      - echo log in to Amazon ECR...
+      - aws --version
+      - echo $AWS_DEFAULT_REGION
+      - aws ecr get-login-password | docker login --username AWS --password-stdin 975167783803.dkr.ecr.us-east-1.amazonaws.com
+      - REPOSITORY_URI=975167783803.dkr.ecr.us-east-1.amazonaws.com/rag-registory
+      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - IMAGE_TAG=${COMMIT_HASH:=latest}
+  build:
+    commands:
+      - echo Build started on date
+      - echo Building the Docker image with environment variables.
+      - >
+        docker build -t rag-registory .
+      - docker tag rag-registory:latest 975167783803.dkr.ecr.us-east-1.amazonaws.com/rag-registory:latest
+  post_build:
+    commands:
+      - echo Build completed on date
+      - docker push 975167783803.dkr.ecr.us-east-1.amazonaws.com/rag-registory:latest
+      - echo write definitions file...
+      - printf '[{"name":"exp-code-pipeline","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+artifacts:
+  files:
+    - appspec.yml
+    - scripts/*.sh
