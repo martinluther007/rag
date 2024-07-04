@@ -7,6 +7,8 @@ import {
 } from "./controllers/handleGenerationController";
 import AppError from "./utils/appError";
 import cors from "cors";
+import globalErrorHandler from "./controllers/errorController";
+
 const app = express();
 
 app.use(express.json());
@@ -27,5 +29,7 @@ app.all("*", (req: Request, _: Response, next: NextFunction) => {
     new AppError(`cannot find ${req.originalUrl} on this server`, 404)
   );
 });
+
+app.use(globalErrorHandler);
 
 export default app;

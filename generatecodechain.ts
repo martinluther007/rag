@@ -3,6 +3,7 @@ import { CharacterTextSplitter } from "langchain/text_splitter";
 import { GoogleGenerativeAI, TaskType } from "@google/generative-ai";
 import { GoogleGenerativeAiEmbeddingFunction } from "chromadb";
 import { Pinecone } from "@pinecone-database/pinecone";
+import catchAsync from "./utils/catchAsync";
 
 const pc = new Pinecone({
   apiKey: "97ab683a-a291-41dd-bb59-36fc602daa1e",
@@ -29,6 +30,7 @@ export const loadFileToVectorDB = async () => {
     chunks.map((chunk) => chunk.pageContent)
   );
 
+  // create vector store
   //   const vectorStore = await pc.createIndex({
   //     name: "test2",
   //     dimension: 768,
@@ -51,14 +53,6 @@ export const loadFileToVectorDB = async () => {
     }))
   );
 };
-
-// export const getCollectionData = async (collectionName: string) => {
-//   const index = pc.index(collectionName).namespace("test3");
-
-//   const results = await index.listPaginated({ prefix: "doc1#" });
-
-//   return results;
-// };
 
 export const getRelatedData = async (query: string) => {
   const splitter = new CharacterTextSplitter({
