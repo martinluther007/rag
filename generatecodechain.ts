@@ -3,7 +3,6 @@ import { CharacterTextSplitter } from "langchain/text_splitter";
 import { GoogleGenerativeAI, TaskType } from "@google/generative-ai";
 import { GoogleGenerativeAiEmbeddingFunction } from "chromadb";
 import { Pinecone } from "@pinecone-database/pinecone";
-import catchAsync from "./utils/catchAsync";
 
 const pc = new Pinecone({
   apiKey: "97ab683a-a291-41dd-bb59-36fc602daa1e",
