@@ -1,4 +1,4 @@
-FROM node:21-alpine
+FROM public.ecr.aws/docker/library/node:21-alpine
 
 ARG GEMINI_API_KEY
 ENV GEMINI_API_KEY=$GEMINI_API_KEY
